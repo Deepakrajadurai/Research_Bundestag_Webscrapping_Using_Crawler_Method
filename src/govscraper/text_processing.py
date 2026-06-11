@@ -13,6 +13,11 @@ _WHITESPACE_RE = re.compile(r"\s+")
 _BOILERPLATE_RE = re.compile(r"(seite\s+\d+|drucksache\s+\d+/\d+)", re.IGNORECASE)
 MIN_SENTENCE_LENGTH = 20
 SHINGLE_SIZE = 3
+LEGAL_SOURCE_TYPES = {
+    "bundesgesetzblatt",
+    "gesetze",
+    "federal_law",
+}
 _SENTENCER = None
 
 
@@ -62,9 +67,17 @@ def split_sentences(text: str) -> list[str]:
     return [sentence.text.strip() for sentence in doc.sents if sentence.text.strip()]
 
 
+def _classify_domain(source_type: str) -> str:
+    normalized = source_type.lower()
+    if normalized in LEGAL_SOURCE_TYPES:
+        return "legal"
+    if any(hint in normalized for hint in ("gesetz", "law")):
+        return "legal"
+    return "debate"
+
+
 def label_sentence(*, sentence: str, source_type: str) -> dict[str, str]:
-    lower_source = source_type.lower()
-    domain = "legal" if "gesetz" in lower_source else "debate"
+    domain = _classify_domain(source_type)
     quality = "short" if len(sentence) < MIN_SENTENCE_LENGTH else "ok"
     return {"domain": domain, "source_type": source_type, "quality_label": quality}
 

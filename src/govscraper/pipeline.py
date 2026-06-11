@@ -28,7 +28,7 @@ def _split_records(records: list[dict[str, Any]], *, seed: int = 42) -> dict[str
     random.Random(seed).shuffle(shuffled)
     total = len(shuffled)
     train_end = int(total * TRAIN_RATIO)
-    val_end = train_end + int(total * VALIDATION_RATIO)
+    val_end = int(total * (TRAIN_RATIO + VALIDATION_RATIO))
     return {
         "train": shuffled[:train_end],
         "validation": shuffled[train_end:val_end],
