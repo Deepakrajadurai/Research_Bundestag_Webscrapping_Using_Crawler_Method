@@ -62,10 +62,10 @@ def run_source_pipeline(config: SourceConfig) -> dict[str, dict[str, list[dict[s
                     }
                 )
 
-    unique_texts = deduplicate_sentences([row["text"] for row in sentence_rows])
     first_row_by_text: dict[str, dict[str, Any]] = {}
     for row in sentence_rows:
         first_row_by_text.setdefault(row["text"], row)
+    unique_texts = deduplicate_sentences(list(first_row_by_text.keys()))
     unique_rows = [first_row_by_text[text] for text in unique_texts if text in first_row_by_text]
 
     corpora: dict[str, list[dict[str, Any]]] = {"debate": [], "legal": []}

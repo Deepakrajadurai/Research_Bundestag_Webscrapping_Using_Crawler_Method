@@ -57,6 +57,18 @@ def fetch_paginated_json_records(
         if not page_records:
             break
         all_records.extend(page_records)
+
+        if isinstance(payload, dict):
+            has_more = payload.get("has_more")
+            if has_more is None:
+                has_more = payload.get("hasMore")
+            if has_more is not None and not bool(has_more):
+                break
+
+            total_count = payload.get("total")
+            if isinstance(total_count, int) and page * page_size >= total_count:
+                break
+
         if len(page_records) < page_size:
             break
         page += 1

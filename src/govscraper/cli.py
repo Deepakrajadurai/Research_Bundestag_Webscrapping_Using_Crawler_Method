@@ -3,11 +3,12 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any
 
 from govscraper.pipeline import SourceConfig, run_source_pipeline, write_jsonl_splits
 
 
-def _load_json_if_present(value: str | None):
+def _load_json_if_present(value: str | None) -> dict[str, Any] | None:
     if not value:
         return None
     path = Path(value)
@@ -44,4 +45,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

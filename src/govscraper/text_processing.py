@@ -96,7 +96,14 @@ def _exact_deduplicate(sentences: list[str]) -> list[str]:
 
 
 def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bool:
-    for existing in kept[-MAX_FUZZY_COMPARISONS:]:
+    comparison_pool = kept
+    if len(kept) > MAX_FUZZY_COMPARISONS:
+        step = max(len(kept) // (MAX_FUZZY_COMPARISONS // 2), 1)
+        sampled = kept[::step]
+        tail = kept[-(MAX_FUZZY_COMPARISONS // 2) :]
+        comparison_pool = sampled + [entry for entry in tail if entry not in sampled]
+
+    for existing in comparison_pool:
         if fuzz.ratio(candidate, existing) >= threshold:
             return True
     return False
@@ -121,7 +128,12 @@ def deduplicate_sentences(
     minhash_threshold: float = 0.90,
     num_perm: int = 128,
 ) -> list[str]:
-    exact_unique = _exact_deduplicate([clean_text(item) for item in sentences if clean_text(item)])
+    cleaned_sentences: list[str] = []
+    for sentence in sentences:
+        cleaned = clean_text(sentence)
+        if cleaned:
+            cleaned_sentences.append(cleaned)
+    exact_unique = _exact_deduplicate(cleaned_sentences)
     lsh = MinHashLSH(threshold=minhash_threshold, num_perm=num_perm)
     kept: list[str] = []
 
