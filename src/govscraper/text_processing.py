@@ -13,6 +13,7 @@ _WHITESPACE_RE = re.compile(r"\s+")
 _BOILERPLATE_RE = re.compile(r"(seite\s+\d+|drucksache\s+\d+/\d+)", re.IGNORECASE)
 MIN_SENTENCE_LENGTH = 20
 SHINGLE_SIZE = 3
+MAX_FUZZY_COMPARISONS = 200
 LEGAL_SOURCE_TYPES = {
     "bundesgesetzblatt",
     "gesetze",
@@ -95,7 +96,7 @@ def _exact_deduplicate(sentences: list[str]) -> list[str]:
 
 
 def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bool:
-    for existing in kept:
+    for existing in kept[-MAX_FUZZY_COMPARISONS:]:
         if fuzz.ratio(candidate, existing) >= threshold:
             return True
     return False
@@ -104,7 +105,8 @@ def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bo
 def _minhash_signature(text: str, *, num_perm: int = 128) -> MinHash:
     signature = MinHash(num_perm=num_perm)
     chars = text.lower()
-    shingles = {chars[i : i + SHINGLE_SIZE] for i in range(max(len(chars) - (SHINGLE_SIZE - 1), 0))}
+    max_start = max(len(chars) - SHINGLE_SIZE + 1, 0)
+    shingles = {chars[i : i + SHINGLE_SIZE] for i in range(max_start)}
     if not shingles and chars:
         shingles = {chars}
     for shingle in shingles:
