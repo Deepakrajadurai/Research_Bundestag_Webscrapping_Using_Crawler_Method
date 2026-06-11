@@ -101,7 +101,7 @@ Apply layered cleaning:
 2. **Text normalization**:
    - Unicode normalization, de-hyphenation across line breaks, whitespace cleanup
 3. **Duplicate removal**:
-   - exact hash dedupe + near-duplicate similarity thresholding
+   - exact hash deduplication + near-duplicate similarity thresholding
 4. **Language filtering**:
    - keep German (`de`) as primary output, flag multilingual fragments
 5. **Sentence segmentation**:
@@ -120,7 +120,7 @@ Create train-ready outputs:
   - test 10%
 - Stratify by source + year + institution to reduce distribution bias
 - Remove leakage:
-  - dedupe across splits
+  - deduplicate across splits
   - prevent same speech/document family from appearing in multiple splits
 
 Output formats:
