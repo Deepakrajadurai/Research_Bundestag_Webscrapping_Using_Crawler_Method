@@ -1,0 +1,30 @@
+[project]
+name = "gov-scraper-pipeline"
+version = "0.1.0"
+description = "German government text scraping and sentence dataset pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "requests==2.32.3",
+  "spacy==3.8.2",
+  "rapidfuzz==3.10.1",
+  "datasketch==1.6.5",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==8.3.3",
+]
+
+[project.scripts]
+gov-scraper = "govscraper.cli:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
