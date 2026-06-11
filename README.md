@@ -68,13 +68,14 @@ Standardize metadata schema across all sources:
 - Use official endpoints or mirrored bulk XML dumps.
 - Parse with strict XML schema validation (reject malformed records).
 - Incremental crawling: only fetch new/changed documents by date/version markers.
+- Enforce source-level license verification before onboarding any source into the dataset pipeline.
 
 #### PDF connectors (Bundesrat + all Länder)
 - Crawl index pages for plenar protocol links and metadata.
 - Download with checksum + content-type validation.
 - Use dual extraction strategy:
   1. Text-native PDF extraction
-  2. OCR fallback only when PDF has no extractable text
+  2. OCR fallback with **PaddleOCR 3.0** when PDF has no extractable text or low-quality scans
 - Track extraction method per page/document for downstream quality controls.
 
 ### Phase 3 — Parsing and Canonical Text Extraction
@@ -89,6 +90,7 @@ Implement format-specific parsers:
   - Preserve paragraph/article hierarchy
   - Remove navigation/meta boilerplate
   - Keep only legally substantive content blocks
+  - Sentence-split legal text for model-ready consistency with speech corpora
 
 All outputs must preserve **raw + cleaned text** for auditability.
 
@@ -113,13 +115,16 @@ Apply layered cleaning:
 
 Create train-ready outputs:
 
-- Sentence-level and document-level datasets
-- Recommended splits:
+- Maintain separate domain corpora:
+  - debate corpus (Bundestag, Bundesrat, Länder, Europarl)
+  - legal corpus (Bundesgesetzblatt and related federal legal XML)
+- Produce sentence-level and document-level datasets per domain.
+- Recommended independent splits per domain:
   - train 80%
   - validation 10%
   - test 10%
-- Stratify by source + year + institution to reduce distribution bias
-- Remove leakage:
+- Stratify each domain by source + year + institution to reduce distribution bias.
+- Remove leakage per domain:
   - deduplicate across splits
   - prevent same speech/document family from appearing in multiple splits
 
@@ -158,9 +163,9 @@ Acceptance criteria:
 2. **Milestone B (P2 sources)**: expanded coverage + improved OCR/quality tuning
 3. **Milestone C (P3 sources + hardening)**: full 16-state coverage + release checklist
 
-## Clarifying Questions
+## Confirmed Decisions (Current)
 
-1. Should legal texts (Bundesgesetzblatt) remain paragraph-level only, or also sentence-split like speeches?
-2. Are there strict licensing constraints for downstream model redistribution that require per-record license filtering?
-3. Do you prefer one unified corpus, or separate domain corpora (debates vs legal text) with independent train/val/test splits?
-4. What is the preferred OCR engine and language model for low-quality scanned PDFs?
+1. Legal texts (Bundesgesetzblatt) must be sentence-split (not paragraph-only).
+2. Every source must pass licensing verification for intended downstream use before inclusion.
+3. Use separate domain corpora (debates vs legal text) with independent train/validation/test splits.
+4. Use the latest PaddleOCR 3.0 as the preferred OCR engine for low-quality scanned PDFs.
