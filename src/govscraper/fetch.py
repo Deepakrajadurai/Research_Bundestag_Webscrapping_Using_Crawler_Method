@@ -4,6 +4,8 @@ from typing import Any
 
 import requests
 
+DEFAULT_PAGE_SIZE = 100
+
 
 def _extract_records(payload: Any, records_key: str | None) -> list[dict[str, Any]]:
     if isinstance(payload, list):
@@ -37,7 +39,7 @@ def fetch_paginated_json_records(
     max_pages: int = 1,
     page_param: str = "page",
     page_size_param: str = "limit",
-    page_size: int = 100,
+    page_size: int = DEFAULT_PAGE_SIZE,
     timeout_seconds: int = 30,
 ) -> list[dict[str, Any]]:
     all_records: list[dict[str, Any]] = []
@@ -60,4 +62,3 @@ def fetch_paginated_json_records(
         page += 1
 
     return all_records
-

@@ -11,6 +11,8 @@ from rapidfuzz import fuzz
 
 _WHITESPACE_RE = re.compile(r"\s+")
 _BOILERPLATE_RE = re.compile(r"(seite\s+\d+|drucksache\s+\d+/\d+)", re.IGNORECASE)
+MIN_SENTENCE_LENGTH = 20
+SHINGLE_SIZE = 3
 _SENTENCER = None
 
 
@@ -63,7 +65,7 @@ def split_sentences(text: str) -> list[str]:
 def label_sentence(*, sentence: str, source_type: str) -> dict[str, str]:
     lower_source = source_type.lower()
     domain = "legal" if "gesetz" in lower_source else "debate"
-    quality = "short" if len(sentence) < 20 else "ok"
+    quality = "short" if len(sentence) < MIN_SENTENCE_LENGTH else "ok"
     return {"domain": domain, "source_type": source_type, "quality_label": quality}
 
 
@@ -89,7 +91,7 @@ def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bo
 def _minhash_signature(text: str, *, num_perm: int = 128) -> MinHash:
     signature = MinHash(num_perm=num_perm)
     chars = text.lower()
-    shingles = {chars[i : i + 3] for i in range(max(len(chars) - 2, 0))}
+    shingles = {chars[i : i + SHINGLE_SIZE] for i in range(max(len(chars) - (SHINGLE_SIZE - 1), 0))}
     if not shingles and chars:
         shingles = {chars}
     for shingle in shingles:

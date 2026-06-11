@@ -9,6 +9,9 @@ from typing import Any
 from govscraper.fetch import fetch_paginated_json_records
 from govscraper.text_processing import clean_text, deduplicate_sentences, extract_text_candidates, label_sentence, split_sentences
 
+TRAIN_RATIO = 0.8
+VALIDATION_RATIO = 0.1
+
 
 @dataclass
 class SourceConfig:
@@ -24,8 +27,8 @@ def _split_records(records: list[dict[str, Any]], *, seed: int = 42) -> dict[str
     shuffled = records[:]
     random.Random(seed).shuffle(shuffled)
     total = len(shuffled)
-    train_end = int(total * 0.8)
-    val_end = train_end + int(total * 0.1)
+    train_end = int(total * TRAIN_RATIO)
+    val_end = train_end + int(total * VALIDATION_RATIO)
     return {
         "train": shuffled[:train_end],
         "validation": shuffled[train_end:val_end],
