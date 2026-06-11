@@ -2,6 +2,49 @@
 
 This repository contains the implementation planning blueprint for building a high-quality German public-sector text corpus for model training.
 
+## Current Implementation (Initial)
+
+The repository now includes a runnable Python pipeline that:
+
+- calls source APIs and fetches paginated JSON records
+- extracts text fields from nested payloads
+- cleans and normalizes extracted text
+- splits text into individual German sentences with **spaCy**
+- labels records into `debate` vs `legal`
+- deduplicates with exact hash + fuzzy matching + **MinHash**
+- writes separate domain corpora with independent `train/validation/test` JSONL splits
+
+### Project Structure
+
+- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/fetch.py` — API fetching
+- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/text_processing.py` — clean/split/label/deduplicate
+- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/pipeline.py` — end-to-end orchestration
+- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/cli.py` — CLI entrypoint
+
+### Install
+
+```bash
+cd /home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method
+python -m pip install -e ".[dev]"
+```
+
+### Run
+
+```bash
+gov-scraper \
+  --endpoint "https://example.org/api/documents" \
+  --source-type "bundestag" \
+  --records-key "documents" \
+  --max-pages 5 \
+  --params '{"format":"json"}' \
+  --output-dir "/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/output"
+```
+
+Output structure:
+
+- `output/debate/train.jsonl`, `validation.jsonl`, `test.jsonl`
+- `output/legal/train.jsonl`, `validation.jsonl`, `test.jsonl`
+
 ## Goal
 
 Build a **noise-minimized, model-ready dataset** from federal and state-level German government debate/legal corpora:
