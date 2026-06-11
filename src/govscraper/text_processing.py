@@ -100,8 +100,9 @@ def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bo
     if len(kept) > MAX_FUZZY_COMPARISONS:
         step = max(len(kept) // (MAX_FUZZY_COMPARISONS // 2), 1)
         sampled = kept[::step]
+        sampled_set = set(sampled)
         tail = kept[-(MAX_FUZZY_COMPARISONS // 2) :]
-        comparison_pool = sampled + [entry for entry in tail if entry not in sampled]
+        comparison_pool = sampled + [entry for entry in tail if entry not in sampled_set]
 
     for existing in comparison_pool:
         if fuzz.ratio(candidate, existing) >= threshold:
@@ -138,10 +139,10 @@ def deduplicate_sentences(
     kept: list[str] = []
 
     for index, sentence in enumerate(exact_unique):
-        if _is_fuzzy_duplicate(sentence, kept, fuzzy_threshold):
-            continue
         signature = _minhash_signature(sentence, num_perm=num_perm)
         if lsh.query(signature):
+            continue
+        if _is_fuzzy_duplicate(sentence, kept, fuzzy_threshold):
             continue
         lsh.insert(f"s{index}", signature)
         kept.append(sentence)
