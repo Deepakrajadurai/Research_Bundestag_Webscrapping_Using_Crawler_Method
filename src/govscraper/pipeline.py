@@ -60,8 +60,10 @@ def run_source_pipeline(config: SourceConfig) -> dict[str, dict[str, list[dict[s
                 )
 
     unique_texts = deduplicate_sentences([row["text"] for row in sentence_rows])
-    text_set = set(unique_texts)
-    unique_rows = [row for row in sentence_rows if row["text"] in text_set]
+    first_row_by_text: dict[str, dict[str, Any]] = {}
+    for row in sentence_rows:
+        first_row_by_text.setdefault(row["text"], row)
+    unique_rows = [first_row_by_text[text] for text in unique_texts if text in first_row_by_text]
 
     corpora: dict[str, list[dict[str, Any]]] = {"debate": [], "legal": []}
     for row in unique_rows:
@@ -84,4 +86,3 @@ def write_jsonl_splits(
             with path.open("w", encoding="utf-8") as handle:
                 for row in rows:
                     handle.write(json.dumps(row, ensure_ascii=False) + "\n")
-

@@ -1,4 +1,4 @@
-# Research_Bundestag_Webscrapping_Using_Crawler_Method
+# Research_Bundestag_Webscraping_Using_Crawler_Method
 
 This repository contains the implementation planning blueprint for building a high-quality German public-sector text corpus for model training.
 
@@ -16,15 +16,15 @@ The repository now includes a runnable Python pipeline that:
 
 ### Project Structure
 
-- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/fetch.py` — API fetching
-- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/text_processing.py` — clean/split/label/deduplicate
-- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/pipeline.py` — end-to-end orchestration
-- `/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/src/govscraper/cli.py` — CLI entrypoint
+- `src/govscraper/fetch.py` — API fetching
+- `src/govscraper/text_processing.py` — clean/split/label/deduplicate
+- `src/govscraper/pipeline.py` — end-to-end orchestration
+- `src/govscraper/cli.py` — CLI entrypoint
 
 ### Install
 
 ```bash
-cd /home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method
+cd <repo-root>
 python -m pip install -e ".[dev]"
 ```
 
@@ -37,7 +37,7 @@ gov-scraper \
   --records-key "documents" \
   --max-pages 5 \
   --params '{"format":"json"}' \
-  --output-dir "/home/runner/work/Research_Bundestag_Webscrapping_Using_Crawler_Method/Research_Bundestag_Webscrapping_Using_Crawler_Method/Deepakrajadurai/Research_Bundestag_Webscrapping_Using_Crawler_Method/output"
+  --output-dir "./output"
 ```
 
 Output structure:

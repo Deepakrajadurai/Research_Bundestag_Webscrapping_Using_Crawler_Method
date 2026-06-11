@@ -89,7 +89,9 @@ def _is_fuzzy_duplicate(candidate: str, kept: list[str], threshold: float) -> bo
 def _minhash_signature(text: str, *, num_perm: int = 128) -> MinHash:
     signature = MinHash(num_perm=num_perm)
     chars = text.lower()
-    shingles = {chars[i : i + 3] for i in range(max(len(chars) - 2, 1))}
+    shingles = {chars[i : i + 3] for i in range(max(len(chars) - 2, 0))}
+    if not shingles and chars:
+        shingles = {chars}
     for shingle in shingles:
         signature.update(shingle.encode("utf-8"))
     return signature
@@ -115,4 +117,3 @@ def deduplicate_sentences(
         lsh.insert(f"s{index}", signature)
         kept.append(sentence)
     return kept
-
